@@ -435,6 +435,10 @@
 				{
 					"name": "INSERTAR USUARIO",
 					"item": []
+				},
+				{
+					"name": "MODIFICAR USUARIO",
+					"item": []
 				}
 			]
 		},
@@ -1248,6 +1252,132 @@
 										"{{ciudad_paraguay}}"
 									]
 								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "USUARIO_DETALLES",
+			"item": [
+				{
+					"name": "ASIGNAR CONTRASEÑA",
+					"item": [
+						{
+							"name": "Asignar contraseña",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"pm.sendRequest({\r",
+											"    url: \"https://desa-backend-usuario-api.onrender.com/api/internal/consulta-sql-privada\",\r",
+											"    method: \"POST\",\r",
+											"    header: {\r",
+											"        \"X-API-KEY\": \"CLAVE_API_KEY_123456\",\r",
+											"        \"Content-Type\": \"text/plain\"\r",
+											"    },\r",
+											"    body: {\r",
+											"        mode: \"raw\",\r",
+											"        raw: `SELECT u.id_usuario\r",
+											"FROM usuario u\r",
+											"LEFT JOIN usuario_detalle ud ON u.id_usuario = ud.id_usuario\r",
+											"WHERE ud.id_usuario IS NULL\r",
+											"ORDER BY RANDOM()\r",
+											"LIMIT 1;`\r",
+											"    }\r",
+											"}, function (err, res) {\r",
+											"    if (!err && res.code === 200) {\r",
+											"        console.log(\"Consulta ejecutada correctamente\");\r",
+											"\r",
+											"        let data = res.json();\r",
+											"        if (data && data.length > 0) {\r",
+											"            // Guardar el nombre en variable de entorno\r",
+											"            pm.environment.set(\"id_usuario\", data[0].id_usuario);\r",
+											"            console.log(\"id_usuario del SQL:\", data[0].id_usuario);\r",
+											"\r",
+											"        }\r",
+											"    } else {\r",
+											"        console.error(\"Error en la consulta SQL\");\r",
+											"        if (err) {\r",
+											"            console.error(\"Detalles del error:\", err);\r",
+											"        }\r",
+											"        if (res && res.text) {\r",
+											"            console.error(\"Respuesta del servidor:\", res.text());\r",
+											"        }\r",
+											"    }\r",
+											"});\r",
+											"\r",
+											"\r",
+											"\r",
+											"pm.environment.set(\"asignar_contraseña\", 'api/UsuarioDetalles/asignar-password');"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Validación de código 200 OK\", () => {\r",
+											"    if (pm.response.code === 200) {\r",
+											"        console.log(\"Código correcto: 200 OK\");\r",
+											"        console.log(\"Body:\");\r",
+											"        console.log(pm.response.text()); // o pm.response.json() si es JSON\r",
+											"        pm.expect(pm.response.code).to.eql(200);\r",
+											"    } else {\r",
+											"        console.log(`Error: se esperaba 200 pero se recibió ${pm.response.code}`);\r",
+											"        console.log(\"Body:\");\r",
+											"        console.log(pm.response.text());\r",
+											"        pm.expect(pm.response.code).to.eql(200); // Esto marcará el test como fallido\r",
+											"    }\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "accept",
+										"value": "*/*"
+									},
+									{
+										"key": "X-API-KEY",
+										"value": "CLAVE_API_KEY_123456"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"idUsuario\": {{id_usuario}},\r\n  \"password\": \"prueba123\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/{{asignar_contraseña}}",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"{{asignar_contraseña}}"
+									]
+								},
+								"description": "Generated from cURL: curl -X 'POST' \\\r\n  'https://desa-backend-usuario-api.onrender.com/api/UsuarioDetalles/asignar-password' \\\r\n  -H 'accept: */*' \\\r\n  -H 'X-API-KEY: CLAVE_API_KEY_123456' \\\r\n  -H 'Content-Type: application/json' \\\r\n  -d '{\r\n  \"idUsuario\": 1,\r\n  \"password\": \"string\"\r\n}'"
 							},
 							"response": []
 						}
