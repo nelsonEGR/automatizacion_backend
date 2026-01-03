@@ -1,0 +1,31 @@
+name: Pruebas de API con Newman
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:  # Permite ejecución manual desde GitHub
+
+jobs:
+  run-api-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clonar el repositorio
+        uses: actions/checkout@v3
+
+      - name: Instalar Node.js 18
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Instalar Newman
+        run: npm install -g newman
+
+      - name: Ejecutar colección de Postman
+        run: newman run Automatización.postman_collection.json --reporters cli,html --reporter-html-export reporte.html
+
+      - name: Publicar reporte como artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: reporte-api
+          path: reporte.html
