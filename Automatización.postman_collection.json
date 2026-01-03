@@ -1,10 +1,10 @@
 {
 	"info": {
-		"_postman_id": "f6c4384a-f0ca-4a92-babb-172f8de0a7bc",
+		"_postman_id": "5c6e6ad2-b193-4f7e-8fcb-136ad4852159",
 		"name": "Automatización",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "47567532",
-		"_collection_link": "https://nelson-gonzalez-fb231ebc-5691574.postman.co/workspace/Nelson_local~930e2f62-07ee-41cc-8c8d-a3bcc90bb861/collection/47567532-f6c4384a-f0ca-4a92-babb-172f8de0a7bc?action=share&source=collection_link&creator=47567532"
+		"_exporter_id": "37283765",
+		"_collection_link": "https://automatizacion-0267.postman.co/workspace/automatizacion_repositorio~76dd04a2-b625-4bec-afcb-9a9121717944/collection/37283765-5c6e6ad2-b193-4f7e-8fcb-136ad4852159?action=share&source=collection_link&creator=37283765"
 	},
 	"item": [
 		{
@@ -430,6 +430,10 @@
 				},
 				{
 					"name": "DESACTIVAR USUARIO",
+					"item": []
+				},
+				{
+					"name": "INSERTAR USUARIO",
 					"item": []
 				}
 			]
