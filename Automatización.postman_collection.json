@@ -430,7 +430,108 @@
 				},
 				{
 					"name": "DESACTIVAR USUARIO",
-					"item": []
+					"item": [
+						{
+							"name": "CP-01 - Usuario- Desactivar usuario random",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"pm.sendRequest({\r",
+											"    url: \"https://desa-backend-usuario-api.onrender.com/api/internal/consulta-sql-privada\",\r",
+											"    method: \"POST\",\r",
+											"    header: {\r",
+											"        \"X-API-KEY\": \"CLAVE_API_KEY_123456\",\r",
+											"        \"Content-Type\": \"text/plain\"\r",
+											"    },\r",
+											"    body: {\r",
+											"        mode: \"raw\",\r",
+											"        raw: `select u.id_usuario from usuario u where u.estado='1' order by RANDOM() limit 1`\r",
+											"    }\r",
+											"}, function (err, res) {\r",
+											"    if (!err && res.code === 200) {\r",
+											"        console.log(\"Consulta ejecutada correctamente\");\r",
+											"        let data = res.json();\r",
+											"        if (data && data.length > 0) {\r",
+											"            // Guardar el nombre en variable de entorno\r",
+											"            pm.environment.set(\"id_usuario\", data[0].id_usuario);\r",
+											"            console.log(\"id_usuario del SQL: Activo\", data[0].id_usuario);\r",
+											"\r",
+											"        }\r",
+											"    } else {\r",
+											"        console.error(\"Error en la consulta SQL\");\r",
+											"        if (err) {\r",
+											"            console.error(\"Detalles del error:\", err);\r",
+											"        }\r",
+											"        if (res && res.text) {\r",
+											"            console.error(\"Respuesta del servidor:\", res.text());\r",
+											"        }\r",
+											"    }\r",
+											"});\r",
+											"\r",
+											"pm.environment.set(\"desactivar_usuario\", 'api/Usuarios/{{id_usuario}}/desactivar');"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Validación de código 200 OK\", () => {\r",
+											"    if (pm.response.code === 200) {\r",
+											"        console.log(\"Código correcto: 200 OK\");\r",
+											"        console.log(\"Body:\");\r",
+											"        console.log(pm.response.text()); // o pm.response.json() si es JSON\r",
+											"        pm.expect(pm.response.code).to.eql(200);\r",
+											"    } else {\r",
+											"        console.log(`Error: se esperaba 200 pero se recibió ${pm.response.code}`);\r",
+											"        console.log(\"Body:\");\r",
+											"        console.log(pm.response.text());\r",
+											"        pm.expect(pm.response.code).to.eql(200); // Esto marcará el test como fallido\r",
+											"    }\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "apikey",
+									"apikey": [
+										{
+											"key": "value",
+											"value": "CLAVE_API_KEY_123456",
+											"type": "string"
+										},
+										{
+											"key": "key",
+											"value": "X-API-KEY",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PATCH",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}/{{desactivar_usuario}}",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"{{desactivar_usuario}}"
+									]
+								}
+							},
+							"response": []
+						}
+					]
 				},
 				{
 					"name": "INSERTAR USUARIO",
@@ -438,7 +539,172 @@
 				},
 				{
 					"name": "MODIFICAR USUARIO",
-					"item": []
+					"item": [
+						{
+							"name": "CP-01 - Usuario- modificar usuario",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Validación de código 204 \", () => {\r",
+											"    if (pm.response.code === 204) {\r",
+											"        console.log(\"Código correcto: 204\");\r",
+											"        console.log(\"Body:\");\r",
+											"        console.log(pm.response.text()); // o pm.response.json() si es JSON\r",
+											"        pm.expect(pm.response.code).to.eql(204);\r",
+											"    } else {\r",
+											"        console.log(`Error: se esperaba 204 pero se recibió ${pm.response.code}`);\r",
+											"        console.log(\"Body:\");\r",
+											"        console.log(pm.response.text());\r",
+											"        pm.expect(pm.response.code).to.eql(204); // Esto marcará el test como fallido\r",
+											"    }\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// Lista de 20 nombres con su género asociado\r",
+											"const nombres = [\r",
+											"  { nombre: \"José\", genero: \"M\" },\r",
+											"  { nombre: \"María\", genero: \"F\" },\r",
+											"  { nombre: \"Juan\", genero: \"M\" },\r",
+											"  { nombre: \"Ana\", genero: \"F\" },\r",
+											"  { nombre: \"Pedro\", genero: \"M\" },\r",
+											"  { nombre: \"Lucía\", genero: \"F\" },\r",
+											"  { nombre: \"Carlos\", genero: \"M\" },\r",
+											"  { nombre: \"Laura\", genero: \"F\" },\r",
+											"  { nombre: \"Miguel\", genero: \"M\" },\r",
+											"  { nombre: \"Sofía\", genero: \"F\" },\r",
+											"  { nombre: \"Andrés\", genero: \"M\" },\r",
+											"  { nombre: \"Paula\", genero: \"F\" },\r",
+											"  { nombre: \"Diego\", genero: \"M\" },\r",
+											"  { nombre: \"Camila\", genero: \"F\" },\r",
+											"  { nombre: \"Fernando\", genero: \"M\" },\r",
+											"  { nombre: \"Valeria\", genero: \"F\" },\r",
+											"  { nombre: \"Ricardo\", genero: \"M\" },\r",
+											"  { nombre: \"Gabriela\", genero: \"F\" },\r",
+											"  { nombre: \"Luis\", genero: \"M\" },\r",
+											"  { nombre: \"Patricia\", genero: \"F\" }\r",
+											"];\r",
+											"\r",
+											"// Seleccionar un nombre random\r",
+											"const randomIndex = Math.floor(Math.random() * nombres.length);\r",
+											"const seleccionado = nombres[randomIndex];\r",
+											"\r",
+											"// Generar número random entre 100 y 500\r",
+											"const numeroRandom = Math.floor(Math.random() * (500 - 100 + 1)) + 100;\r",
+											"\r",
+											"// Email = nombre + numeroRandom + @gmail.com\r",
+											"const email = `${seleccionado.nombre.toLowerCase()}${numeroRandom}@gmail.com`;\r",
+											"\r",
+											"// Celular en formato 0981 + 6 dígitos random\r",
+											"const celular = \"0981\" + Math.floor(100000 + Math.random() * 900000);\r",
+											"\r",
+											"// Fecha de nacimiento dinámica entre 1980 y 2010\r",
+											"const year = Math.floor(Math.random() * (2010 - 1980 + 1)) + 1980;\r",
+											"const month = Math.floor(Math.random() * 12); // 0-11\r",
+											"const day = Math.floor(Math.random() * 28) + 1; // para evitar problemas con febrero\r",
+											"const fechaNacimiento = new Date(year, month, day).toISOString();\r",
+											"\r",
+											"// Género según el nombre elegido\r",
+											"const genero = seleccionado.genero;\r",
+											"\r",
+											"// Guardar en variables temporales de Postman\r",
+											"pm.variables.set(\"nombre\", seleccionado.nombre);\r",
+											"pm.variables.set(\"email\", email);\r",
+											"pm.variables.set(\"celular\", celular);\r",
+											"pm.variables.set(\"fechaNacimiento\", fechaNacimiento);\r",
+											"pm.variables.set(\"genero\", genero);\r",
+											"///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////\r",
+											"pm.sendRequest({\r",
+											"    url: \"https://desa-backend-usuario-api.onrender.com/api/internal/consulta-sql-privada\",\r",
+											"    method: \"POST\",\r",
+											"    header: {\r",
+											"        \"X-API-KEY\": \"CLAVE_API_KEY_123456\",\r",
+											"        \"Content-Type\": \"text/plain\"\r",
+											"    },\r",
+											"    body: {\r",
+											"        mode: \"raw\",\r",
+											"        raw: `select u.id_usuario from usuario u where u.estado='1' and u.genero='M' order by RANDOM() limit 1`\r",
+											"    }\r",
+											"}, function (err, res) {\r",
+											"    if (!err && res.code === 200) {\r",
+											"        console.log(\"Consulta ejecutada correctamente\");\r",
+											"\r",
+											"        let data = res.json();\r",
+											"        if (data && data.length > 0) {\r",
+											"            // Guardar el nombre en variable de entorno\r",
+											"            pm.environment.set(\"id_usuario\", data[0].id_usuario);\r",
+											"            console.log(\"id_usuario del SQL:\", data[0].id_usuario);\r",
+											"\r",
+											"        }\r",
+											"    } else {\r",
+											"        console.error(\"Error en la consulta SQL\");\r",
+											"        if (err) {\r",
+											"            console.error(\"Detalles del error:\", err);\r",
+											"        }\r",
+											"        if (res && res.text) {\r",
+											"            console.error(\"Respuesta del servidor:\", res.text());\r",
+											"        }\r",
+											"    }\r",
+											"});\r",
+											"\r",
+											"pm.environment.set(\"modificar_usuario\", 'api/Usuarios/{{id_usuario}}');\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "apikey",
+									"apikey": [
+										{
+											"key": "value",
+											"value": "CLAVE_API_KEY_123456",
+											"type": "string"
+										},
+										{
+											"key": "key",
+											"value": "X-API-KEY",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"nombre\": \"{{nombre}}\",\r\n  \"email\": \"{{email}}\",\r\n  \"celular\": \"{{celular}}\",\r\n  \"fechaNacimiento\": \"{{fechaNacimiento}}\",\r\n  \"genero\": \"{{genero}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/{{modificar_usuario}}",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"{{modificar_usuario}}"
+									]
+								}
+							},
+							"response": []
+						}
+					]
 				}
 			]
 		},
@@ -1334,6 +1600,125 @@
 											"        console.log(\"Body:\");\r",
 											"        console.log(pm.response.text());\r",
 											"        pm.expect(pm.response.code).to.eql(200); // Esto marcará el test como fallido\r",
+											"    }\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "accept",
+										"value": "*/*"
+									},
+									{
+										"key": "X-API-KEY",
+										"value": "CLAVE_API_KEY_123456"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"idUsuario\": {{id_usuario}},\r\n  \"password\": \"prueba123\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/{{asignar_contraseña}}",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"{{asignar_contraseña}}"
+									]
+								},
+								"description": "Generated from cURL: curl -X 'POST' \\\r\n  'https://desa-backend-usuario-api.onrender.com/api/UsuarioDetalles/asignar-password' \\\r\n  -H 'accept: */*' \\\r\n  -H 'X-API-KEY: CLAVE_API_KEY_123456' \\\r\n  -H 'Content-Type: application/json' \\\r\n  -d '{\r\n  \"idUsuario\": 1,\r\n  \"password\": \"string\"\r\n}'"
+							},
+							"response": []
+						},
+						{
+							"name": "reasignar contraseña - tirar error",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"pm.sendRequest({\r",
+											"    url: \"https://desa-backend-usuario-api.onrender.com/api/internal/consulta-sql-privada\",\r",
+											"    method: \"POST\",\r",
+											"    header: {\r",
+											"        \"X-API-KEY\": \"CLAVE_API_KEY_123456\",\r",
+											"        \"Content-Type\": \"text/plain\"\r",
+											"    },\r",
+											"    body: {\r",
+											"        mode: \"raw\",\r",
+											"        raw: `SELECT u.id_usuario\r",
+											"FROM usuario u\r",
+											"WHERE EXISTS (\r",
+											"    SELECT 1\r",
+											"    FROM usuario_detalle ud\r",
+											"    WHERE ud.id_usuario = u.id_usuario\r",
+											")\r",
+											"ORDER BY RANDOM()\r",
+											"LIMIT 1;`\r",
+											"    }\r",
+											"}, function (err, res) {\r",
+											"    if (!err && res.code === 200) {\r",
+											"        console.log(\"Consulta ejecutada correctamente\");\r",
+											"\r",
+											"        let data = res.json();\r",
+											"        if (data && data.length > 0) {\r",
+											"            // Guardar el nombre en variable de entorno\r",
+											"            pm.environment.set(\"id_usuario\", data[0].id_usuario);\r",
+											"            console.log(\"id_usuario del SQL:\", data[0].id_usuario);\r",
+											"\r",
+											"        }\r",
+											"    } else {\r",
+											"        console.error(\"Error en la consulta SQL\");\r",
+											"        if (err) {\r",
+											"            console.error(\"Detalles del error:\", err);\r",
+											"        }\r",
+											"        if (res && res.text) {\r",
+											"            console.error(\"Respuesta del servidor:\", res.text());\r",
+											"        }\r",
+											"    }\r",
+											"});\r",
+											"\r",
+											"\r",
+											"\r",
+											"pm.environment.set(\"asignar_contraseña\", 'api/UsuarioDetalles/asignar-password');"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Validación de código 400 Bad Request\", () => {\r",
+											"    if (pm.response.code === 400) {\r",
+											"        console.log(\"Código correcto: 400 Bad Request\");\r",
+											"        console.log(\"Body:\");\r",
+											"        console.log(pm.response.text()); // o pm.response.json() si es JSON\r",
+											"        pm.expect(pm.response.code).to.eql(400);\r",
+											"    } else {\r",
+											"        console.log(`Error: se esperaba 400 pero se recibió ${pm.response.code}`);\r",
+											"        console.log(\"Body:\");\r",
+											"        console.log(pm.response.text());\r",
+											"        pm.expect(pm.response.code).to.eql(400); // Esto marcará el test como fallido\r",
 											"    }\r",
 											"});"
 										],
